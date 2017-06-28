@@ -32,7 +32,7 @@ module Admin
       class_option :bootstrap,  required: false, default: nil, aliases: '-b',
                    desc: "Use bootstrap for templates"
 
-      class_option :jbuilder,  required: false, default: nil,
+      class_option :jbuilder,  required: false, default: false,
                    desc: "Generate jbuilder files if jbuilder is installed"
 
       argument :attributes, type: :array, default: [], banner: "field:type field:type"
@@ -79,7 +79,7 @@ module Admin
         end
 
         # I think there should be a better way to detect if jbuilder is in use
-        if Gem::Specification.find_all_by_name('jbuilder').length >= 1
+        if jbuilder && Gem::Specification.find_all_by_name('jbuilder').length >= 1
           %w(index show).each do |view|
             template "views/jbuilder/#{view}.json.jbuilder.erb", File.join("app/views", prefix, controller_file_path, "#{view}.json.jbuilder")
           end
@@ -113,7 +113,7 @@ module Admin
       end
 
       def parent_controller_class_name
-        options[:parent_controller].split.map(&:capitalize).join('::')
+        options[:parent_controller].split('::').map(&:capitalize).join('::')
       end
 
       def prefixed_route_url
