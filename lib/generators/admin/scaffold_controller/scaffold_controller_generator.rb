@@ -32,6 +32,9 @@ module Admin
       class_option :bootstrap,  required: false, default: nil, aliases: '-b',
                    desc: "Use bootstrap for templates"
 
+      class_option :jbuilder,  required: false, default: nil,
+                   desc: "Generate jbuilder files if jbuilder is installed"
+
       argument :attributes, type: :array, default: [], banner: "field:type field:type"
 
       def initialize(args, *options) #:nodoc:
@@ -45,7 +48,7 @@ module Admin
       def create_controller_files
         # I think there should be a better way to detect if jbuilder is in use
         # If you know it, please let me know
-        if Gem::Specification.find_all_by_name('jbuilder').length >= 1
+        if jbuilder && Gem::Specification.find_all_by_name('jbuilder').length >= 1
           template "controllers/jbuilder/controller.rb.erb", File.join('app/controllers', prefix, class_path, "#{controller_file_name}_controller.rb")
         else
           template "controllers/railties/controller.rb.erb", File.join('app/controllers', prefix, class_path, "#{controller_file_name}_controller.rb")
@@ -106,7 +109,7 @@ module Admin
       end
 
       def parent_controller_class_name
-        options[:parent_controller].capitalize
+        options[:parent_controller].split.map(&:capitalize).join('::')
       end
 
       def prefixed_route_url
