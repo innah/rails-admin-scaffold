@@ -96,6 +96,10 @@ module Admin
         options[:bootstrap]
       end
 
+      def jbuilder
+        options[:jbuilder]
+      end
+
       def prefix
         options[:prefix_name]
       end
